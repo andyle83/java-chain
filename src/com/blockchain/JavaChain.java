@@ -18,6 +18,7 @@ public class JavaChain {
     public static Wallet coinbase;
 
     public static Transaction genesisTransaction;
+    public static Block genesisBlock;
 
     public static void main(String[] args) {
         initWallets();
@@ -26,7 +27,31 @@ public class JavaChain {
 
         initBlocks();
 
-        printBlockState();
+        // Testing
+        Block block1 = new Block(genesisBlock.hash);
+        System.out.println("\nWallet A's balance is: " + walletA.getBalance());
+        System.out.println("\nWallet A is attempting to send funds (40) to Wallet B...");
+        block1.addTransaction(walletA.sendFunds(walletB.publicKey, 40f));
+        addBlock(block1);
+        System.out.println("\nWallet A's balance is: " + walletA.getBalance());
+        System.out.println("Wallet B's balance is: " + walletB.getBalance());
+
+        Block block2 = new Block(block1.hash);
+        System.out.println("\nWallet A is attempting to send more funds (1000) than it has...");
+        block2.addTransaction(walletA.sendFunds(walletB.publicKey, 1000f));
+        addBlock(block2);
+        System.out.println("\nWallet A's balance is: " + walletA.getBalance());
+        System.out.println("Wallet B's balance is: " + walletB.getBalance());
+
+        Block block3 = new Block(block2.hash);
+        System.out.println("\nWallet B is attempting to send funds (20) to Wallet A...");
+        block3.addTransaction(walletB.sendFunds( walletA.publicKey, 20));
+        System.out.println("\nWallet A's balance is: " + walletA.getBalance());
+        System.out.println("Wallet B's balance is: " + walletB.getBalance());
+
+
+
+        //printBlockState();
     }
 
     private static void printBlockState() {
@@ -36,10 +61,10 @@ public class JavaChain {
     }
 
     private static void initBlocks() {
-        System.out.println("Creating and Mining Genesis block... ");
-        Block genesis = new Block("0");
-        genesis.addTransaction(genesisTransaction);
-        addBlock(genesis);
+        System.out.println("\nCreating and Mining Genesis block... ");
+        genesisBlock = new Block("0");
+        genesisBlock.addTransaction(genesisTransaction);
+        addBlock(genesisBlock);
     }
 
     // Genesis transaction
