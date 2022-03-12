@@ -7,6 +7,7 @@ This demo of simple blockchain in Java
 + Basic fields inside a block
 + Using hashing & mining to create new block
 
-## Transction (implementing)
+## Transction
 + Making new wallet
 + Send / receive crypto via transaction
++ Include transaction in block
