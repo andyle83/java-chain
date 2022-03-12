@@ -2,13 +2,16 @@ package com.blockchain;
 
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Main {
 
     public static ArrayList<Block> blockchain = new ArrayList<>();
+    public static HashMap<String,TransactionOutput> UTXOs = new HashMap<String,TransactionOutput>(); //list of all unspent transactions.
 
     // Mining difficulty level
     public static int difficulty = 5;
+    public static float minimumTransaction = 0.1f;
 
     public static Wallet walletA;
     public static Wallet walletB;

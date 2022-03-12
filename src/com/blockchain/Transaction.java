@@ -32,6 +32,43 @@ public class Transaction {
         );
     }
 
+    public boolean processTransaction() {
+        if(verifySignature() == false) {
+            System.out.println("#Transaction Signature failed to verify");
+            return false;
+        }
+
+        // Gather transaction inputs (Make sure they are unspent):
+        for(TransactionInput i : inputs) {
+            i.UTXO = Main.UTXOs.get(i.transactionOutputId);
+        }
+
+        // Check if transaction is valid
+        if(getInputsValue() < Main.minimumTransaction) {
+            System.out.println("#Transaction Inputs to small: " + getInputsValue());
+            return false;
+        }
+
+        // Generate transaction outputs
+        float leftOver = getInputsValue() - value; //get value of inputs then the leftover change:
+        transactionId = calculateHash();
+        outputs.add(new TransactionOutput( this.recipient, value,transactionId)); //send value to recipient
+        outputs.add(new TransactionOutput( this.sender, leftOver,transactionId)); //send the left over 'change' back to sender
+
+        //add outputs to Unspent list
+        for(TransactionOutput o : outputs) {
+            Main.UTXOs.put(o.id , o);
+        }
+
+        //remove transaction inputs from UTXO lists as spent:
+        for(TransactionInput i : inputs) {
+            if(i.UTXO == null) continue; //if Transaction can't be found skip it
+            Main.UTXOs.remove(i.UTXO.id);
+        }
+
+        return true;
+    }
+
     // Signs all the data we don't wish to be tampered with.
     public void generateSignature(PrivateKey privateKey) {
         String data = Utils.getStringFromKey(sender) + Utils.getStringFromKey(recipient) + value;
@@ -42,5 +79,22 @@ public class Transaction {
     public boolean verifySignature() {
         String data = Utils.getStringFromKey(sender) + Utils.getStringFromKey(recipient) + value;
         return Utils.verifyECDSASig(sender, data, signature);
+    }
+
+    // Returns sum of inputs(UTXOs) values
+    public float getInputsValue() {
+        float total = 0;
+        for(var i : inputs) {
+            if(i.UTXO == null) continue; //if Transaction can't be found skip it
+            total += i.UTXO.value;
+        }
+        return total;
+    }
+
+    // Returns sum of outputs:
+    public float getOutputsValue() {
+        float total = 0;
+        for(TransactionOutput o : outputs) total += o.value;
+        return total;
     }
 }
