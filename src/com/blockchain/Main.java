@@ -14,6 +14,21 @@ public class Main {
     public static Wallet walletB;
 
     public static void main(String[] args) {
+        initBlocks();
+
+        initWallets();
+
+        // Create a test transaction from WalletA to walletB
+        Transaction transaction = new Transaction(walletA.publicKey, walletB.publicKey, 5, null);
+        transaction.generateSignature(walletA.privateKey);
+        // Verify the signature works and verify it from the public key
+        System.out.println("Is signature verified");
+        System.out.println(transaction.verifySignature());
+    }
+
+    public static void initWallets() {
+        System.out.println("Init some wallets for testing");
+
         //Setup Bouncy castle as a Security Provider
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
@@ -21,10 +36,16 @@ public class Main {
         walletB = new Wallet();
 
         // Test public and private keys
-        System.out.println("Private and public keys:");
+        System.out.println("Private and public keys in wallet A :");
         System.out.println(Utils.getStringFromKey(walletA.privateKey));
         System.out.println(Utils.getStringFromKey(walletA.publicKey));
 
+        System.out.println("Private and public keys in wallet B :");
+        System.out.println(Utils.getStringFromKey(walletB.privateKey));
+        System.out.println(Utils.getStringFromKey(walletB.publicKey));
+    }
+
+    public static void initBlocks() {
         // Add our blocks to the blockchain ArrayList
         System.out.println("Trying to Mine block 1... ");
         addBlock(new Block("Hi im the first block", "0"));
