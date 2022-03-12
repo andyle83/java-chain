@@ -1,15 +1,31 @@
 package com.blockchain;
 
+import java.security.Security;
 import java.util.ArrayList;
 
 public class Main {
 
     public static ArrayList<Block> blockchain = new ArrayList<>();
+
+    // Mining difficulty level
     public static int difficulty = 5;
 
-    public static void main(String[] args) {
-        //add our blocks to the blockchain ArrayList:
+    public static Wallet walletA;
+    public static Wallet walletB;
 
+    public static void main(String[] args) {
+        //Setup Bouncy castle as a Security Provider
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+
+        walletA = new Wallet();
+        walletB = new Wallet();
+
+        // Test public and private keys
+        System.out.println("Private and public keys:");
+        System.out.println(Utils.getStringFromKey(walletA.privateKey));
+        System.out.println(Utils.getStringFromKey(walletA.publicKey));
+
+        // Add our blocks to the blockchain ArrayList
         System.out.println("Trying to Mine block 1... ");
         addBlock(new Block("Hi im the first block", "0"));
 
