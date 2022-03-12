@@ -7,7 +7,7 @@ import java.util.HashMap;
 public class JavaChain {
 
     public static ArrayList<Block> blockchain = new ArrayList<>();
-    public static HashMap<String,TransactionOutput> UTXOs = new HashMap<String,TransactionOutput>(); //list of all unspent transactions.
+    public static HashMap<String,TransactionOutput> UTXOs = new HashMap<>(); //list of all unspent transactions.
 
     // Mining difficulty level
     public static int difficulty = 5;
