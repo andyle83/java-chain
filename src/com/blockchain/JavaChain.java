@@ -15,18 +15,41 @@ public class JavaChain {
 
     public static Wallet walletA;
     public static Wallet walletB;
+    public static Wallet coinbase;
+
+    public static Transaction genesisTransaction;
 
     public static void main(String[] args) {
-        initBlocks();
-
         initWallets();
 
-        // Create a test transaction from WalletA to walletB
-        Transaction transaction = new Transaction(walletA.publicKey, walletB.publicKey, 5, null);
-        transaction.generateSignature(walletA.privateKey);
-        // Verify the signature works and verify it from the public key
-        System.out.println("Is signature verified");
-        System.out.println(transaction.verifySignature());
+        initTransaction();
+
+        initBlocks();
+
+        printBlockState();
+    }
+
+    private static void printBlockState() {
+        String blockchainJson = Utils.getJson(blockchain);
+        System.out.println("\nThe block chain: ");
+        System.out.println(blockchainJson);
+    }
+
+    private static void initBlocks() {
+        System.out.println("Creating and Mining Genesis block... ");
+        Block genesis = new Block("0");
+        genesis.addTransaction(genesisTransaction);
+        addBlock(genesis);
+    }
+
+    // Genesis transaction
+    private static void initTransaction() {
+        // Create genesis transaction, which sends 100 NoobCoin to walletA:
+        genesisTransaction = new Transaction(coinbase.publicKey, walletA.publicKey, 100f, null);
+        genesisTransaction.generateSignature(coinbase.privateKey);	 // Manually sign the genesis transaction
+        genesisTransaction.transactionId = "0"; // Manually set the transaction id
+        genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.recipient, genesisTransaction.value, genesisTransaction.transactionId)); //manually add the Transactions Output
+        UTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0)); // It's important to store our first transaction in the UTXOs list.
     }
 
     public static void initWallets() {
@@ -37,6 +60,7 @@ public class JavaChain {
 
         walletA = new Wallet();
         walletB = new Wallet();
+        coinbase = new Wallet();
 
         // Test public and private keys
         System.out.println("Private and public keys in wallet A :");
@@ -46,24 +70,10 @@ public class JavaChain {
         System.out.println("Private and public keys in wallet B :");
         System.out.println(Utils.getStringFromKey(walletB.privateKey));
         System.out.println(Utils.getStringFromKey(walletB.publicKey));
-    }
 
-    public static void initBlocks() {
-        // Add our blocks to the blockchain ArrayList
-        System.out.println("Trying to Mine block 1... ");
-        addBlock(new Block("Hi im the first block", "0"));
-
-        System.out.println("Trying to Mine block 2... ");
-        addBlock(new Block("Yo im the second block",blockchain.get(blockchain.size()-1).hash));
-
-        System.out.println("Trying to Mine block 3... ");
-        addBlock(new Block("Hey im the third block",blockchain.get(blockchain.size()-1).hash));
-
-        System.out.println("\nBlockchain is Valid: " + isChainValid());
-
-        String blockchainJson = Utils.getJson(blockchain);
-        System.out.println("\nThe block chain: ");
-        System.out.println(blockchainJson);
+        System.out.println("Private and public keys in coinbase :");
+        System.out.println(Utils.getStringFromKey(walletB.privateKey));
+        System.out.println(Utils.getStringFromKey(walletB.publicKey));
     }
 
     public static Boolean isChainValid() {
