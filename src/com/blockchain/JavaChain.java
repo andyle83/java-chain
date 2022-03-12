@@ -46,6 +46,7 @@ public class JavaChain {
         Block block3 = new Block(block2.hash);
         System.out.println("\nWallet B is attempting to send funds (20) to Wallet A...");
         block3.addTransaction(walletB.sendFunds( walletA.publicKey, 20));
+        addBlock(block3);
         System.out.println("\nWallet A's balance is: " + walletA.getBalance());
         System.out.println("Wallet B's balance is: " + walletB.getBalance());
 
